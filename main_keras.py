@@ -1,4 +1,5 @@
-import os, numpy as np
+import os
+import numpy as np
 from keras import optimizers
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization
@@ -6,41 +7,44 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 import matplotlib.pyplot as plt
 import keras.backend.tensorflow_backend as K
 import tensorflow as tf
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.6
 session = tf.compat.v1.Session(config=config)
 
 X_train, X_test, Y_train, Y_test = np.load('./numpy_data/multi_image_data.npy')
 print(X_train.shape)
 print(X_train.shape[0])
 
-categories = ['0.닭', '1.도토리', '2.모니터', '3.못', '4.야구', '5.옷장', '6.요트', '7.컵', '8.피자', '9.해변']
+categories = ['0.Flower', '1.Boat', '2.Mountain', '3.Automobile', '4.Pizza']
 nb_classes = len(categories)
 
-X_train = X_train.astype(float) / 255
-X_test = X_test.astype(float) / 255
+X_train = X_train.astype(float) / 255.0
+X_test = X_test.astype(float) / 255.0
 
 with K.tf_ops.device('/device:GPU:0'):
     model = Sequential()
     # Layer 1 --------------------------------------------------------------------------------------
-    model.add(Conv2D(32, (2, 2), padding="same", input_shape=X_train.shape[1:], activation='relu'))
+    model.add(Conv2D(32, kernel_size=(2, 2), padding="same", input_shape=X_train.shape[1:], activation="relu"))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     # Layer 2 --------------------------------------------------------------------------------------
-    model.add(Conv2D(64, (2, 2), padding="same", activation='relu'))
+    model.add(Conv2D(64, kernel_size=(2, 2), padding="same", activation="relu"))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     # Layer 3 --------------------------------------------------------------------------------------
-    model.add(Conv2D(128, (2, 2), padding="same", activation='relu'))
+    model.add(Conv2D(128, kernel_size=(2, 2), padding="same", activation="relu"))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     # Layer 4 --------------------------------------------------------------------------------------
     model.add(Flatten())
-    model.add(Dense(256, activation='relu'))
+    model.add(Dense(256, activation="relu"))
     model.add(BatchNormalization())
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes, activation='softmax'))
@@ -57,10 +61,12 @@ with K.tf_ops.device('/device:GPU:0'):
 
 model.summary()
 
-history = model.fit(X_train, Y_train, batch_size=16, epochs=200, validation_data=(X_test, Y_test), callbacks=[checkpoint, early_stopping])
+history = model.fit(X_train, Y_train, batch_size=32, epochs=100, callbacks=[checkpoint, early_stopping],
+                    validation_split=0.2)
 
 print("정확도 : %.4f" % (model.evaluate(X_test, Y_test)[1]))
 
+# Loss 그래프 -------------------------------------------------------
 Y_vloss = history.history['val_loss']
 Y_loss = history.history['loss']
 
@@ -75,7 +81,7 @@ plt.ylabel('Loss')
 plt.grid()
 plt.show()
 
-
+# Accuracy 그래프 -------------------------------------------------------
 Y_accu = history.history['accuracy']
 Y_vaccu = history.history['val_accuracy']
 

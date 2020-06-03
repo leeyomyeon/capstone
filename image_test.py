@@ -1,5 +1,6 @@
 from PIL import Image
-import glob, numpy as np
+import glob
+import numpy as np
 from keras.models import load_model
 
 caltech_dir = './test_images'
@@ -21,36 +22,36 @@ X = np.array(X)
 model = load_model('./model/multi_img_classification.model')
 
 prediction = model.predict(X)
-np.set_printoptions(formatter={'float' : lambda x: "{0:0.3f}".format(x)})
+np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 cnt = 0
 
-# ['0.닭', '1.도토리', '2.모니터', '3.못', '4.야구', '5.옷장', '6.요트', '7.컵', '8.피자', '9.해변']
+# ['0.Flower', '1.Boat', '2.Mountain', '3.Automobile', '4.Pizza']
 for i in prediction:
     pre = i.argmax()
-    print(i)
-    print(pre)
+    # print(i)
+    # print(pre)
 
     pre_str = ''
-    if pre == 0: pre_str = "닭"
-    elif pre == 1: pre_str = "도토리"
-    elif pre == 2: pre_str = "모니터"
-    elif pre == 3: pre_str = "못"
-    elif pre == 4: pre_str = "야구"
-    elif pre == 5: pre_str = "옷장"
-    elif pre == 6: pre_str = "요트"
-    elif pre == 7: pre_str = "컵"
-    elif pre == 8: pre_str = "피자"
-    elif pre == 9: pre_str = "해변"
+    if pre == 0:
+        pre_str = "Flower"
+    elif pre == 1:
+        pre_str = "Boat"
+    elif pre == 2:
+        pre_str = "Mountain"
+    elif pre == 3:
+        pre_str = "Automobile"
+    elif pre == 4:
+        pre_str = "Pizza"
 
-    if i[0] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[1] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[2] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[3] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[4] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[5] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[6] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[7] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[8] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
-    if i[9] >= 0.7: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_str+"(으)로 추정됩니다.")
+    if i[0] == 1:
+        print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+    elif i[1] == 1:
+        print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+    elif i[2] == 1:
+        print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+    elif i[3] == 1:
+        print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+    elif i[4] == 1:
+        print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+
     cnt += 1
-    print('\n')
