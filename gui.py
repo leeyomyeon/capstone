@@ -3,11 +3,12 @@ from tkinter import *
 from PIL import Image
 import glob, numpy as np
 from keras.models import load_model
+import os
 # from image_test import submit
 
 root= Tk()
 root.title("gui")
-root.geometry("540x300+100+100")
+root.geometry("750x480+400+200")
 root.resizable(False, False)
 
 def find_working():
@@ -23,9 +24,17 @@ def find_saving():
     saving=root.dirName
 
 def submit(workpath, savepath):
+    if not(os.path.isdir("result")):
+        os.makedirs(os.path.join("result"))
+    global filelog
+    global prelog
+    
     caltech_dir = workpath
     image_w = 64
     image_h = 64
+
+    filelog=[]
+    prelog=[]
 
     X = []
     filenames = []
@@ -50,7 +59,6 @@ def submit(workpath, savepath):
         pre = i.argmax()
         # print(i)
         # print(pre)
-
         pre_str = ''
         if pre == 0:
             pre_str = "Flower"
@@ -64,17 +72,34 @@ def submit(workpath, savepath):
             pre_str = "Pizza"
 
         if i[0] == 1:
-            print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+            filelog.append(filenames[cnt].split("\\")[1])
+            prelog.append(pre_str)
         elif i[1] == 1:
-            print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+            filelog.append(filenames[cnt].split("\\")[1])
+            prelog.append(pre_str)
         elif i[2] == 1:
-            print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+            filelog.append(filenames[cnt].split("\\")[1])
+            prelog.append(pre_str)
         elif i[3] == 1:
-            print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+            filelog.append(filenames[cnt].split("\\")[1])
+            prelog.append(pre_str)
         elif i[4] == 1:
-            print("파일명 : "+filenames[cnt].split("\\")[1]+"\t\t\t추론값 : "+pre_str)
+
+            filelog.append(filenames[cnt].split("\\")[1])
+            prelog.append(pre_str)
 
         cnt += 1
+
+    for i in range(len(filelog)):
+        print("파일명 : "+filelog[i]+"\t\t\t추론값 : "+prelog[i])
+
+    for i in range(len(filelog)):
+        log.insert(1.0, "파일명 : "+filelog[i]+"\t\t\t추론값 : "+prelog[i]+"\n")
+
+    for i in range(len(prelog)):
+        if not(os.path.isdir(saving+"/result/"+prelog[i])): 
+            os.makedirs(os.path.join(saving+"/result/"+prelog[i]))
+        
 
 
 lb1=Label(root, text="Working Path")
@@ -87,6 +112,8 @@ btn2=Button(root, text="find", command=find_saving)
 save_path=Label(root, text="")
 
 subbtn=Button(root, text="submit", command=lambda:submit(working, saving))
+log=Text(root, height=25)
+
 
 lb1.grid(row=1, column=0)
 btn1.grid(row=2, column=0)
@@ -95,5 +122,6 @@ lb2.grid(row=3, column=0)
 btn2.grid(row=4, column=0)
 save_path.grid(row=4, column=1)
 subbtn.grid(row=5, column=0)
+log.grid(row=6, column=1)
 
 root.mainloop() 
