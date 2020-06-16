@@ -4,6 +4,7 @@ from PIL import Image
 import glob, numpy as np
 from keras.models import load_model
 import os
+import shutil
 # from image_test import submit
 
 root= Tk()
@@ -26,15 +27,17 @@ def find_saving():
 def submit(workpath, savepath):
     if not(os.path.isdir("result")):
         os.makedirs(os.path.join("result"))
+
     global filelog
     global prelog
     
+    filelog=[]
+    prelog=[]
+    dname=[]
+
     caltech_dir = workpath
     image_w = 64
     image_h = 64
-
-    filelog=[]
-    prelog=[]
 
     X = []
     filenames = []
@@ -84,14 +87,10 @@ def submit(workpath, savepath):
             filelog.append(filenames[cnt].split("\\")[1])
             prelog.append(pre_str)
         elif i[4] == 1:
-
             filelog.append(filenames[cnt].split("\\")[1])
             prelog.append(pre_str)
 
         cnt += 1
-
-    for i in range(len(filelog)):
-        print("파일명 : "+filelog[i]+"\t\t\t추론값 : "+prelog[i])
 
     for i in range(len(filelog)):
         log.insert(1.0, "파일명 : "+filelog[i]+"\t\t\t추론값 : "+prelog[i]+"\n")
@@ -99,7 +98,12 @@ def submit(workpath, savepath):
     for i in range(len(prelog)):
         if not(os.path.isdir(saving+"/result/"+prelog[i])): 
             os.makedirs(os.path.join(saving+"/result/"+prelog[i]))
-        
+            dname.append(prelog[i])
+    
+    for i in range(len(dname)):
+        for j in range(len(filelog)):
+            if dname[i]==prelog[j]:
+                shutil.copy(working+"/"+filelog[j], saving+"/result/"+prelog[j])
 
 
 lb1=Label(root, text="Working Path")
